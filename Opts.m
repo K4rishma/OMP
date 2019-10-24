@@ -14,7 +14,7 @@ classdef Opts
         windowfunc = @boxcar;%  @blackman, @tukeywin, @boxcar, @hann % window to use for filtering kernels
         windowfunc_args = 1; %blackman/hann: 'periodic', 'symmetric'; %boxcar: 0-1; tukeywin: 0-1;  % additional arguments for window function if needed
         subPixFinder = 4; % 0 = none; 1 = gaussian 2x3 pixel; 2 = 2D (3x3) gaussian; 3 = centroid; 4 = 2x3 parabola; 5 = 2D (3x3) parabolic (dont use)
-        n_ave = 1;  % number of frames used for correlation averaging
+        n_ave = 4;  % number of frames used for correlation averaging
         nm_ave = 1; % number of frames used for correlation moving averaging
         imDeform = 'linear'; %image deformation method can be: linear, cubic, *spline - (only on CPU)
         stepDevisor = 4;  %devisor overlap for step size calculation. Must be multiple of 2 (or 1)
@@ -25,6 +25,10 @@ classdef Opts
         uni_args = {0.2, 4, 1};  %  universal outlier arguments - {epsilon, thresh, b} - see median_outlier.m
         mincorr = 0.05;%0.05; % minimum maximum normcorr value for a kernel
         useSmoothN = true;
+        
+         %% spatial weights
+        SpatialWeights = 1; % vessel orientation restriction
+        w_type = 'Huber';% 'Cauchy' 'Huber' 'Bisquare' 
         
         %% directional weights
         dc = 0; % apply directional weights
