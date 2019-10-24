@@ -139,7 +139,7 @@ else
 end
 
 axes('position',[0.1,0.25,0.8,0.7]), imagesc(x,y,Img(:,:,S));%, [Rmin Rmax])
-% colormap gray
+colormap gray
 axis image
 
 FigPos = get(gcf,'Position');
@@ -193,7 +193,7 @@ hold on;
 
 
 
-quiver(xmap,ymap, vxmap(:,:,S).*scl,vymap(:,:,S).*scl,0,'g');
+quiver(xmap,ymap, vxmap(:,:,S).*scl,vymap(:,:,S).*scl,0,'k');
 hold off;
 
 
@@ -229,7 +229,7 @@ hold off;
       
         hold on;
         % quivercEdit(xmap(:,:,S),ymap(:,:,S),vxmap(:,:,S),vymap(:,:,S),scl, umax,ax);
-        quiver(xmap,ymap,vxmap(:,:,S).*scl,vymap(:,:,S).*scl,0,'g');
+        quiver(xmap,ymap,vxmap(:,:,S).*scl,vymap(:,:,S).*scl,0,'k');
         hold off;
         
         caxis([Rmin Rmax])
@@ -262,7 +262,7 @@ hold off;
         
         hold on;
         % quivercEdit(xmap(:,:,S),ymap(:,:,S),vxmap(:,:,S),vymap(:,:,S),scl, umax,ax);
-        quiver(xmap,ymap,vxmap(:,:,S),vymap(:,:,S),scl,'g');
+        quiver(xmap,ymap,vxmap(:,:,S),vymap(:,:,S),scl,'k');
         hold off;
     end
 

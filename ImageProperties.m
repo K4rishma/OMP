@@ -831,13 +831,6 @@ classdef ImageProperties < handle
             assert(pivfilt.is_spatial_disp || pivfilt.is_spatial_vel, 'first convert piv data to spatial units');
             bmodes = self.log_compression(self.bmodes_cart(:,:,1:pivfilt.vdims(3)));
             
-            angles = anglesFromDerivatives(self.frames);
-            zero_angles = zeros(size(angles)+1);
-            zero_angles(1:end-1,1:end-1) =  angles; % padding with zero
-            clear angles
-            angles = zero_angles;
-            angles = medfilt2(angles,[10 10]);
-            angles_dim = repmat(angles,1,1,size(bmodes,3));
             
             X = pivfilt.X;
             Y = pivfilt.Z;
@@ -846,8 +839,8 @@ classdef ImageProperties < handle
             imlim_x = [self.x(1), self.x(end)];
             imlim_y = [self.z(1), self.z(end)];
             figure()
-%             vecscale(imlim_x, imlim_y,bmodes, drange, X, Y, U, V, sf)
-             vecscale(imlim_x, imlim_y,angles_dim, drange, X, Y, U, V, sf)
+             vecscale(imlim_x, imlim_y,bmodes, drange, X, Y, U, V, sf)
+%              vecscale(imlim_x, imlim_y,angles_dim, drange, X, Y, U, V, sf)
         end
         
         function save_bmode_avi(self, filepath, drange, coord)
