@@ -14,8 +14,11 @@ for j = 1:block_length + 1
     for i = 1:block_length + 1
         clear L
         L = im_frame(i:i+block_length-1,j:j+block_length-1,:,:);
-        L = L - mean( sum(sum(L))./im_size );
-        D(:,i+(block_length +1)*(j-1),:,:) = reshape(L,[],n,kernels);
+%         L = L - mean( sum(sum(L))./im_size );
+%         D(:,i+(block_length +1)*(j-1),:,:) = reshape(L,[],n,kernels);
+          L = reshape(L,[],n,kernels);
+          L = (L - mean(L))./std(L);
+          D(:,i+(block_length +1)*(j-1),:,:) = reshape(L,[],n,kernels);
     end
 end
 
