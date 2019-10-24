@@ -1,7 +1,8 @@
-function angles = anglesFromDerivatives(acquisitions)
+function angles = anglesFromDerivatives(acquisitions,mask)
 %figure; imagesc(mean(abs(BF_filtered),3));title('filtered PDI');
 I = (mean(abs(acquisitions(:,:,1,:)),4));
-d_mask = I > graythresh(I);%- 0.60*graythresh(I);
+%d_mask = I > graythresh(I);%- 0.60*graythresh(I);
+d_mask = mask;
 masked_I = I.*d_mask;
 %figure; imagesc(masked_I);
 
