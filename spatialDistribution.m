@@ -1,16 +1,7 @@
 function [sw,med_angles] =  spatialDistribution(angles, Weight_fnc, angular_pos,ss1)
-
-zero_angles = zeros(size(angles));
-
-%check
-% angles = 5.*ones(216,216);
-% angles(108:end,108:end) = 3;
-% angles(1:107,1:107) = 8;
-
-zero_angles =  angles; % padding with zero
-clear angles
-angles = zero_angles;
-
+%% To Do
+% corrent for angles = 0
+%%
 %  figure; imagesc(abs(angles))
 ss1_angle = ss1(:,:,1,:);
 angles_seg = angles(ss1_angle);
