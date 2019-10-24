@@ -24,7 +24,7 @@ classdef PIV < handle
         corrfunc        % correlation function - generic handle for assignment during piv_init
         multipass       % current index in multipass
         passes          % number of passes to make
-        sw              % spatial weight
+        Sw              % spatial weight
         %visualisation
         show_corr_live  % option for showing quiver over correlation map on each frame iteration
         lvcorr_fig      % figure handle for quiver over correlation map figure
@@ -235,78 +235,55 @@ classdef PIV < handle
                 image2_cut = self.image2(ss2);%.*winFilt;
                 
                 % get correlation maps
-                corrmaps = squeeze(self.corrfunc(image1_cut,image2_cut));
+                %corrmaps = squeeze(self.corrfunc(image1_cut,image2_cut));
                 
-                % applying directional weights
-                if Opts.dc == 1
-                    acquisitions = scan.frames;
-                    angles = anglesFromDerivatives(acquisitions);
-                    corrmaps = directional_constraint(ss2,corrmaps,angles);
-                    % correct the multiplication
-                end
+               
                 %apply mask
                 ii = ~mask(squeeze(ss1(round(ksize(1)/2+1), round(ksize(2)/2+1), 1, :))); % image pixel indices of mask
                 jj = ~mask((mini(1):step(1):maxi(1))+round(ksize(1)/2), (mini(2):step(2):maxi(2))+round(ksize(2)/2)); % vector pixel indices of mask
-                corrmaps(:,:, ii) = NaN; % mask correlation values
+                %corrmaps(:,:, ii) = NaN; % mask correlation values
                 typevector(jj) = 0; % mask vectors
                 
                 % subpixel fit
                 %[vector1, maxVals,hort1,vert1] = subpix_fit(corrmaps, ksize);
-                %vector1(ii,:)  = NaN;
-                
-%                  kk = repmat(~ii,1,2);
-%                 hort1 = (hort1(~ii)).'; vert1 = (vert1(~ii)).';
-%                 B = vector1(kk);
-%                 B = reshape(B, [], 2);
-%                vector1(ii,:)  = NaN; vector = vector1;
                
-                 meanIm1 = mean(mean(mean(image1_cut)));
-                 meanIm2 = mean(mean(mean(image2_cut)));
-                meanIm1 = 0;
-                meanIm2 = 0;
-                image1m = squeeze(mean(image1_cut, 3));
-    
-                
-                image2m = squeeze(mean(image2_cut , 3));
-                image1m = image1m - meanIm1;
-                image2m = image2m - meanIm2;
                 
                 if findex == 1
-                
-                Ya = repmat([ksize(1)/2: -1: -(ksize(1)/2 )]', 1, ksize(2)+1);
-                Xa = repmat([-ksize(2)/2: 1: (ksize(2)/2)], ksize(1)+1, 1);
-                
-                angular_pos = atan2d(Ya,Xa);
-                
-                acquisitions = scan.frames;
-                angles = anglesFromDerivatives(acquisitions);
-%                 figure; imagesc(angles);
-                
-                w_type = 'Huber';
-%                 s = 1/4;
-                switch w_type
-                       
-                    case 'Cauchy'
-                        s = 1/16;
-                        cauchy = @(x) min(2/(1 + (x*s)^2),1);
-                        [sw,med_angles] = spatialDistribution(angles, cauchy, angular_pos,ss1);
-                    case 'Huber'
-                        p = 1.5; s = 1/16;% p = 1.5
-                        huber = @(x) min(p/abs((x*s)),1);
-                        [sw,med_angles] = spatialDistribution(angles, huber, angular_pos,ss1);
-                    case 'Bisquare'
-                        c = 22; s = 1/16;
-                        bisquare = @(x) max((1 - ((x*s)/c)^2)^2,0);
-                        [sw,med_angles] = spatialDistribution(angles, bisquare, angular_pos,ss1);
-                    otherwise
-                        disp('unknown error');
-                end
-                
-                self.sw = sw;
-                
+                    
+                    Ya = repmat([ksize(1)/2: -1: -(ksize(1)/2 )]', 1, ksize(2)+1);
+                    Xa = repmat([-ksize(2)/2: 1: (ksize(2)/2)], ksize(1)+1, 1);
+                    
+                    angular_pos = atan2d(Ya,Xa);
+                    
+                    acquisitions = scan.frames;
+                    angles = anglesFromDerivatives(acquisitions,scan.imMask_cart);
+                    %               figure; imagesc(angles);
+                    
+                    w_type = Opts.w_type;
+                    
+                    switch w_type
+                        
+                        case 'Cauchy'
+                            s = 1/16;
+                            cauchy = @(x) min(2/(1 + (x*s)^2),1);
+                            [sw,med_angles] = spatialDistribution(angles, cauchy, angular_pos,ss1);
+                        case 'Huber'
+                            p = 1.3; s = 1/16;% p = 1.5
+                            huber = @(x) min(p/abs((x*s)),1);
+                            [sw,med_angles] = spatialDistribution(angles, huber, angular_pos,ss1);
+                        case 'Bisquare'
+                            c = 22; s = 1/16;
+                            bisquare = @(x) max((1 - ((x*s)/c)^2)^2,0);
+                            [sw,med_angles] = spatialDistribution(angles, bisquare, angular_pos,ss1);
+                        otherwise
+                            disp('unknown error');
+                    end
+                    
+                    self.Sw = sw;
+                    
                 else
                     
-                    sw = self.sw;
+                    sw = self.Sw;
                 end
 % angles1 = reshape(med_angles.', n_el(1), n_el(2));
 % figure; imagesc(angles1);
