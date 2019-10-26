@@ -25,6 +25,7 @@ classdef PIV < handle
         multipass       % current index in multipass
         passes          % number of passes to make
         Sw              % spatial weight
+        SR              % SR indices 
         %visualisation
         show_corr_live  % option for showing quiver over correlation map on each frame iteration
         lvcorr_fig      % figure handle for quiver over correlation map figure
@@ -250,6 +251,10 @@ classdef PIV < handle
                 
                 if findex == 1
                     
+                    sr_size = size(self.image2(ss2));
+                    SR_indices = Indices_Dcorrelation(sr_size, ksize(1));
+                    self.SR = SR_indices;
+                    
                     Ya = repmat([ksize(1)/2: -1: -(ksize(1)/2 )]', 1, ksize(2)+1);
                     Xa = repmat([-ksize(2)/2: 1: (ksize(2)/2)], ksize(1)+1, 1);
                     
@@ -281,9 +286,6 @@ classdef PIV < handle
                     
                     self.Sw = sw;
                     
-                else
-                    
-                    sw = self.Sw;
                 end
 % angles1 = reshape(med_angles.', n_el(1), n_el(2));
 % figure; imagesc(angles1);
@@ -325,7 +327,9 @@ classdef PIV < handle
 %                 A = vector(kk);
 %                 A = (reshape(A, [],2));
 %                 [vector,hort,vert] = correlation1(image1_cut, image2_cut, sw, ii); 
-                [vector, max_value] = correlation2(image1_cut, self.image2(ss2), sw, ii); % ss2 is different from ss1
+                image_frame2 = self.image2(ss2);
+                image2_SR = image_frame2(self.SR);
+                [vector, max_value] = correlation2(image1_cut, image2_SR, self.Sw, ii); % ss2 is different from ss1
                 % new base tables
                 xtable = repmat((mini(2):step(2):maxi(2))+ksize(2)/2, length(mini(1):step(1):maxi(1)), 1);
                 ytable = repmat(((mini(1):step(1):maxi(1))+ksize(1)/2)', 1, length(mini(2):step(2):maxi(2)));

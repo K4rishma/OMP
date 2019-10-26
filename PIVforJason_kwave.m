@@ -1,4 +1,5 @@
-% filtering removed
+% filtering removed % temp mask(x,rot) % change
+% angleFromDerivatives %loadfile
 close all hidden
 clear all
 clc
@@ -41,8 +42,9 @@ clc
 % load('C:\Users\k.k\Desktop\wetransfer-e90f62\k_wave_analysis\datasets\cylindrical_H\straight_vessel_freqRemov_lowresol-10  -5   0   5  10_Ne_25_4e5_dx_.mat')
 % load('C:\Users\k.k\Desktop\wetransfer-e90f62\k_wave_analysis\datasets\cylindrical_H\straight_vessel_freqRemov_lowresol_densityg-10  -5   0   5  10_Ne_30_4e5_dx_.mat')
 
-load('C:\Users\k.k\Desktop\wetransfer-e90f62\k_wave_analysis\datasets\cylindrical_H\straight_vessel_freqRemov_lowresol_densityg-10  -5   0   5  10_Ne_60_4e5_dx_.mat')
-  
+% load('C:\Users\k.k\Desktop\wetransfer-e90f62\k_wave_analysis\datasets\cylindrical_H\straight_vessel_freqRemov_lowresol_densityg-10  -5   0   5  10_Ne_60_4e5_dx_.mat')
+ load('C:\Users\k.k\Desktop\wetransfer-e90f62\k_wave_analysis\datasets\cylindrical_H\Slantedmin0.3-10  -5   0   5  10_Ne_60_4e5_dx_.mat')
+%  load('C:\Users\k.k\Desktop\wetransfer-e90f62\k_wave_analysis\datasets\cylindrical_H\horizontal0.3-10  -5   0   5  10_Ne_60_4e5_dx_.mat')
 % observations with 1 as start scan, filtering operation is evident in 10, 
  
 IM = (data{1,6});
@@ -53,7 +55,7 @@ Trans = data{1,2};
 medium = data{1,3};
 CI = data{1,7};
 
-Ne_new = 28;%size(data{1,7},3);
+Ne_new = size(data{1,7},3);
 
 % for comparing it with Pieter's code
 % BF = CI; % for another script
@@ -76,13 +78,13 @@ SimTime = kgrid.Nt*kgrid.dt;
 c0 = medium.sound_speed(1,1);
 velocity = c0/(SimTime*Trans.f0*4)
 %% Doppler Filtering
-% FsDoppler = 1/(kgrid.Nt*kgrid.dt);
-% f1 = 2/30*FsDoppler;
-% filter_order = 8;
-% [b,a] = butter(8,f1/(FsDoppler/2),'high');
-% BF_filtered = single(filtfilt(b,a,double(reshape(BF,Nz*Nx,[])')))';
-% BF_filtered = reshape(BF_filtered,Nz,Nx,Ne_new);
-BF_filtered = BF;
+FsDoppler = 1/(kgrid.Nt*kgrid.dt);
+f1 = 0.5/30*FsDoppler;
+filter_order = 8;
+[b,a] = butter(8,f1/(FsDoppler/2),'high');
+BF_filtered = single(filtfilt(b,a,double(reshape(BF,Nz*Nx,[])')))';
+BF_filtered = reshape(BF_filtered,Nz,Nx,Ne_new);
+ BF_filtered = BF;
 % BF_new = BF_filtered;
 % [BF_filtered,~, ~, ~] = svdfilter(BF,8, 0);
 % 
@@ -142,10 +144,13 @@ temp = squeeze(mean(abs(scan.frames),4))./nanmax(nanmax(squeeze(mean(abs(scan.fr
 % temp(:,1:81) = 0;
 % temp(:,119:end) = 0;
 
-V1_x = kgrid.Nx/2 - 30: 160;      
+% V1_x = kgrid.Nx/2 - 30: 160;     
+ V1_x = kgrid.Nx/2 - 50: 135;%kgrid.Nx/2 + 50; 150     % for slanted vessel
+% V1_x = kgrid.Nx/2 - 50: 150;%kgrid.Nx/2 + 50; 
 V1_y = kgrid.Ny/2 - 6: 1: kgrid.Ny/2 + 6;
 temp = 0.*temp;
 temp(V1_x, V1_y) = 1;
+temp = imrotate(temp,-60,'crop');
 figure; imagesc(temp); title('temp');
 scan.imMask_cart = temp;
 figure; imshow(scan.imMask_cart);
